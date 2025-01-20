@@ -6,7 +6,7 @@ phases:
       - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
-      - IMAGE_TAG=latest
+      - IMAGE_TAG=latest  # Change this to a unique identifier if necessary
       - echo "ECR login complete!"
 
   build:
@@ -20,4 +20,9 @@ phases:
       - echo "Pushing Docker image to ECR..."
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo "Docker image pushed successfully!"
-      
+      - echo '[{"name":"container_name","imageUri":"'"$REPOSITORY_URI:$IMAGE_TAG"'"}]' > imagedefinitions.json
+      - echo "imagedefinitions.json file created successfully!"
+
+artifacts:
+  files:
+    - imagedefinitions.json
